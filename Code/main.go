@@ -1,19 +1,26 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func main() {
-	type DaySpec struct {
-		Cases int
-		Date  time.Time
-	}
+type DaySpec struct {
+	Cases int
+	Date  time.Time
+}
 
+func main() {
+	lambda.Start(CovidHandler)
+}
+
+func CovidHandler(ctx context.Context) {
 	fmt.Println("Starting the application...")
 
 	response, err := http.Get("https://api.covid19api.com/total/country/united-kingdom/status/deaths")
@@ -38,4 +45,5 @@ func main() {
 	}
 
 	fmt.Println("Terminating the application...")
+	ctx.Done()
 }
